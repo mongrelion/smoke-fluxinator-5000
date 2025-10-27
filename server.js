@@ -9,11 +9,16 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 // Configuration
-const SMOKE_MACHINE_START_URL = 'http://your-smoke-machine-ip/start';
-const SMOKE_MACHINE_STOP_URL = 'http://your-smoke-machine-ip/stop';
-const CYCLE_DURATION = 10000; // 10 seconds
+const SMOKE_MACHINE_HOST = process.env.SMOKE_MACHINE_HOST;
+const SMOKE_MACHINE_URL  = `${SMOKE_MACHINE_HOST}/rpc/Switch.Set`;
+const CYCLE_DURATION     = 10000; // 10 seconds
 
 let isSmokingActive = false;
+
+if (!SMOKE_MACHINE_HOST) {
+  console.error("SMOKE_MACHINE_HOST environment variable missing");
+  process.exit(1);
+}
 
 app.use(express.static('public'));
 
@@ -36,14 +41,14 @@ io.on('connection', (socket) => {
 
     try {
       // Start the smoke machine
-      await axios.post(SMOKE_MACHINE_START_URL);
+      await axios.post(SMOKE_MACHINE_URL, { id: 0, on: true });
       console.log('Smoke started');
 
       // Wait for 10 seconds
       setTimeout(async () => {
         try {
           // Stop the smoke machine
-          await axios.post(SMOKE_MACHINE_STOP_URL);
+          await axios.post(SMOKE_MACHINE_URL, { id: 0, on: false });
           console.log('Smoke stopped');
         } catch (error) {
           console.error('Error stopping smoke:', error);
@@ -70,5 +75,6 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
+  console.log(`Smoke machine host: ${SMOKE_MACHINE_HOST}`);
   console.log(`Server running on port ${PORT}`);
 });
