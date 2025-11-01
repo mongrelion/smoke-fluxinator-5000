@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+}
+
+h1 {
+  color: white;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+#smokeButton {
+  font-size: 2rem;
+  padding: 2rem 4rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#smokeButton:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+}
+
+#smokeButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#status {
+  margin-top: 2rem;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.countdown {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
