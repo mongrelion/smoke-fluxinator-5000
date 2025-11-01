@@ -3,10 +3,12 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const axios = require('axios');
+const pino = require('pino');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+const logger = pino();
 
 // Configuration
 const SMOKE_MACHINE_HOST = process.env.SMOKE_MACHINE_HOST;
@@ -23,7 +25,7 @@ if (!SMOKE_MACHINE_HOST) {
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
-  console.log('User connected');
+  logger.info('User connected');
 
   // Send current state to newly connected client
   socket.emit('smokingState', { isActive: isSmokingActive });
@@ -42,14 +44,14 @@ io.on('connection', (socket) => {
     try {
       // Start the smoke machine
       await axios.post(SMOKE_MACHINE_URL, { id: 0, on: true });
-      console.log('Smoke started');
+      logger.info('Smoke started');
 
       // Wait for 10 seconds
       setTimeout(async () => {
         try {
           // Stop the smoke machine
           await axios.post(SMOKE_MACHINE_URL, { id: 0, on: false });
-          console.log('Smoke stopped');
+          logger.info('Smoke stopped');
         } catch (error) {
           console.error('Error stopping smoke:', error);
         }
@@ -69,12 +71,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    logger.info('User disconnected');
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Smoke machine host: ${SMOKE_MACHINE_HOST}`);
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Smoke machine host: ${SMOKE_MACHINE_HOST}`);
+  logger.info(`Server running on port ${PORT}`);
 });
